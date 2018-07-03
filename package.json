@@ -1,0 +1,27 @@
+{
+  "name": "treehouse-fsjs-project-7",
+  "version": "1.0.0",
+  "description": "Twitter App",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tallerico/Treehouse-FSJS-Project-7.git"
+  },
+  "author": "Mike Tallerico",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tallerico/Treehouse-FSJS-Project-7/issues"
+  },
+  "homepage": "https://github.com/tallerico/Treehouse-FSJS-Project-7#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.3",
+    "ora": "^2.1.0",
+    "pug": "^2.0.3"
+  }
+}
