@@ -12,13 +12,13 @@ const T = new Twit({
   access_token_secret:  auth.access_token_secret
 })
 
-
 app.use(bodyParser.urlencoded({ extended: false}));
 app.use(cookieParser());
 app.use('/static', express.static('public'));
 
 app.set('view engine', 'pug');
 
+//a function to create a new object for tweet data
 function tweetObj(name,scrName, imgUrl, retweet, likes, tweetText) {
   this.name = name;
   this.scrName = scrName;
@@ -28,18 +28,23 @@ function tweetObj(name,scrName, imgUrl, retweet, likes, tweetText) {
   this.tweetText = tweetText;
 };
 
+//a function to create a new object for direct message data
 function dmObj(message, date) {
   this.message = message;
-  this.date = moment().unix(date);
+  this.date = moment(Number(date)).format("ddd, hA");
 };
 
-
+// setting route for the index page
 app.get('/', (req, res) => {
   const tweets = [];
   const dms = [];
+  const userData;
+
+  //promise to get tweet data
   const tweetProm = new Promise( (resolve, reject) => {
     T.get('statuses/user_timeline', { screen_name: 'mtallerico1', count: 6 }, 
       (err, data, response) => {
+      //pushing tweet data to variable that will be scoped to res.render
       resolve(data.map(i => {
         const tweetItem = new tweetObj(`${i.user.name}`, `${i.user.screen_name}`,
           `${i.user.profile_image_url}`, `${i.retweet_count}`, 
@@ -48,14 +53,15 @@ app.get('/', (req, res) => {
         }));
       });
   });
+  //promise to get user data
+  const userData = new Promise( (resolve, reject) => {
+    T.get('users/show', { screen_name: 'mtallerico1'}, 
+      (err, data, response) => {
+      resolve(console.log(data));
+    })
+  });
 
-  // const userData = new Promise( (resolve, reject) => {
-  //   T.get('users/show', { screen_name: 'mtallerico1'}, 
-  //     (err, data, response) => {
-  //     resolve(newData.push(data));
-  //   })
-  // });
-
+  //promise to get directMessages
   const directMessages = new Promise( (resolve, reject) => {
     T.get('direct_messages/events/list', { screen_name: 'mtallerico1', count: 5}, 
       (err, data, response) => {
@@ -67,15 +73,14 @@ app.get('/', (req, res) => {
   });
   
   Promise
-    .all([tweetProm, directMessages])
+    .all([tweetProm, directMessages, userData])
     .then(responses => {
       res.render('index', {tweets, dms});
     })
 });
 
 app.get('/json', (req, res) => {
-  T.get('direct_messages/events/list', { screen_name: 'mtallerico1' }, (err, data, response) => {
-    
+  T.get('users/show', { screen_name: 'mtallerico1' }, (err, data, response) => { 
     res.send(data);
   });
 });
