@@ -30,7 +30,7 @@ function tweetObj(name,scrName, imgUrl, retweet, likes, tweetText) {
 
 function dmObj(message, date) {
   this.message = message;
-  this.date = moment().format(date);
+  this.date = moment().unix(date);
 };
 
 
