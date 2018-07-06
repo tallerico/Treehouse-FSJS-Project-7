@@ -18,20 +18,55 @@ app.use('/static', express.static('public'));
 
 app.set('view engine', 'pug');
 
-
+function tweetObj(name,scrName, imgUrl, retweet, likes, tweetText) {
+  this.name = name;
+  this.scrName = scrName;
+  this.imgUrl = imgUrl;
+  this.retweet = retweet;
+  this.likes = likes;
+  this.tweetText = tweetText;
+};
 
 
 app.get('/', (req, res) => {
-  T.get('statuses/user_timeline', { screen_name: 'mtallerico1', count: 6 }, (err, data, response) => {
-    const tweetData = data;
-    res.render('index', {tweetData});
+  const tweets = [];
+  const tweetProm = new Promise( (resolve, reject) => {
+    T.get('statuses/user_timeline', { screen_name: 'mtallerico1', count: 6 }, 
+      (err, data, response) => {
+      resolve(data.map(i => {
+        const tweetItem = new tweetObj(`${i.user.name}`, `${i.user.screen_name}`,
+          `${i.user.profile_image_url}`, `${i.retweet_count}`, 
+          `${i.favorite_count}`, `${i.text}`);
+          tweets.push(tweetItem);
+        }));
+      });
   });
+
+  // const userData = new Promise( (resolve, reject) => {
+  //   T.get('users/show', { screen_name: 'mtallerico1'}, 
+  //     (err, data, response) => {
+  //     resolve(newData.push(data));
+  //   })
+  // });
+
+  const directMessages = new Promise( (resolve, reject) => {
+    T.get('direct_messages/events/list', { screen_name: 'mtallerico1'}, 
+      (err, data, response) => {
+      resolve(console.log(data));
+    })
+  });
+  
+  Promise
+    .all([tweetProm, directMessages])
+    .then(responses => {
+      res.render('index', {tweets});
+    })
 });
 
 app.get('/json', (req, res) => {
-  T.get('statuses/user_timeline', { screen_name: 'mtallerico1', count: 6 }, (err, data, response) => {
-    const tweetData = data;
-    res.send(tweetData);
+  T.get('direct_messages/events/list', { screen_name: 'mtallerico1' }, (err, data, response) => {
+    
+    res.send(data);
   });
 });
 
