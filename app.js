@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const Twit = require('twit');
+const moment = require('moment');
 const { auth } = require('./js/config.js');
 const app = express();
 const T = new Twit({
@@ -27,9 +28,15 @@ function tweetObj(name,scrName, imgUrl, retweet, likes, tweetText) {
   this.tweetText = tweetText;
 };
 
+function dmObj(message, date) {
+  this.message = message;
+  this.date = moment().format(date);
+};
+
 
 app.get('/', (req, res) => {
   const tweets = [];
+  const dms = [];
   const tweetProm = new Promise( (resolve, reject) => {
     T.get('statuses/user_timeline', { screen_name: 'mtallerico1', count: 6 }, 
       (err, data, response) => {
@@ -50,16 +57,19 @@ app.get('/', (req, res) => {
   // });
 
   const directMessages = new Promise( (resolve, reject) => {
-    T.get('direct_messages/events/list', { screen_name: 'mtallerico1'}, 
+    T.get('direct_messages/events/list', { screen_name: 'mtallerico1', count: 5}, 
       (err, data, response) => {
-      resolve(console.log(data));
-    })
+      resolve(data.events.map(i => {
+        const messageItem = new dmObj(`${i.message_create.message_data.text}`, `${i.created_timestamp}`);
+        dms.push(messageItem);
+      }));
+    });
   });
   
   Promise
     .all([tweetProm, directMessages])
     .then(responses => {
-      res.render('index', {tweets});
+      res.render('index', {tweets, dms});
     })
 });
 

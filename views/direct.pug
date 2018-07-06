@@ -1,0 +1,8 @@
+block direct
+  each message, i in dms
+    li.app--message--me
+      .app--avatar(style="background-image: url(public/images/m-spore.png)")
+        img(src="public/images/m-spore.png")
+      p.app--message--text #{dms[i].message}
+      p.app--message--timestamp 2 hours ago
+    
