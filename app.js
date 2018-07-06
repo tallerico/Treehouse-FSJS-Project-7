@@ -38,7 +38,7 @@ function dmObj(message, date) {
 app.get('/', (req, res) => {
   const tweets = [];
   const dms = [];
-  const userData;
+  
 
   //promise to get tweet data
   const tweetProm = new Promise( (resolve, reject) => {
@@ -54,16 +54,19 @@ app.get('/', (req, res) => {
       });
   });
   //promise to get user data
-  const userData = new Promise( (resolve, reject) => {
-    T.get('users/show', { screen_name: 'mtallerico1'}, 
-      (err, data, response) => {
-      resolve(console.log(data));
-    })
-  });
+  // const userData = new Promise( (resolve, reject) => {
+  //   T.get('users/show', { screen_name: 'mtallerico1'}, 
+  //     (err, data, response) => {
+  //     resolve( userData = new Object(
+  //       userName: 
+  //     ));
+  //   })
+  // });
 
   //promise to get directMessages
   const directMessages = new Promise( (resolve, reject) => {
-    T.get('direct_messages/events/list', { screen_name: 'mtallerico1', count: 5}, 
+    T.get('direct_messages/events/list', 
+      { screen_name: 'mtallerico1', count: 5}, 
       (err, data, response) => {
       resolve(data.events.map(i => {
         const messageItem = new dmObj(`${i.message_create.message_data.text}`, `${i.created_timestamp}`);
@@ -73,7 +76,7 @@ app.get('/', (req, res) => {
   });
   
   Promise
-    .all([tweetProm, directMessages, userData])
+    .all([tweetProm, directMessages])
     .then(responses => {
       res.render('index', {tweets, dms});
     })
