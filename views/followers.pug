@@ -1,0 +1,13 @@
+block followers
+  each follower, i in followers
+    li
+      .circle--fluid
+        .circle--fluid--cell.circle--fluid--primary
+          a.app--tweet--author
+            .app--avatar(style=`background-image: url(${followers[i].imgUrl})`)
+              img(src=`${followers[i].imgUrl}`)
+            h4 #{followers[i].name}
+            p @#{followers[i].scrName}
+        .circle--fluid--cell
+          a.button.button-text Unfollow
+  

@@ -34,11 +34,18 @@ function dmObj(message, date) {
   this.date = moment(Number(date)).format("ddd, hA");
 };
 
+//a function to create a new object for direct message data
+function followObj(name, scrName, imgUrl) {
+  this.name = name;
+  this.scrName = scrName;
+  this.imgUrl = imgUrl;
+};
+
 // setting route for the index page
 app.get('/', (req, res) => {
   const tweets = [];
   const dms = [];
-  
+  const followers = [];
 
   //promise to get tweet data
   const tweetProm = new Promise( (resolve, reject) => {
@@ -53,15 +60,16 @@ app.get('/', (req, res) => {
         }));
       });
   });
-  //promise to get user data
-  // const userData = new Promise( (resolve, reject) => {
-  //   T.get('users/show', { screen_name: 'mtallerico1'}, 
-  //     (err, data, response) => {
-  //     resolve( userData = new Object(
-  //       userName: 
-  //     ));
-  //   })
-  // });
+  // promise to get followers data
+  const followerProm = new Promise( (resolve, reject) => {
+    T.get('followers/list', { screen_name: 'mtallerico1', count: 5}, 
+      (err, data, response) => {
+      resolve(data.users.map(i => {
+        const followerItem = new followObj(`${i.name}`, `${i.screen_name}`, `${i.profile_image_url}`);
+        followers.push(followerItem);
+      }));
+    })
+  });
 
   //promise to get directMessages
   const directMessages = new Promise( (resolve, reject) => {
@@ -76,14 +84,14 @@ app.get('/', (req, res) => {
   });
   
   Promise
-    .all([tweetProm, directMessages])
+    .all([tweetProm, directMessages, followerProm])
     .then(responses => {
-      res.render('index', {tweets, dms});
+      res.render('index', {tweets, dms, followers});
     })
 });
 
 app.get('/json', (req, res) => {
-  T.get('users/show', { screen_name: 'mtallerico1' }, (err, data, response) => { 
+  T.get('followers/list', { screen_name: 'mtallerico1', count: 5 }, (err, data, response) => { 
     res.send(data);
   });
 });
