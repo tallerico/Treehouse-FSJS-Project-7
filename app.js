@@ -96,8 +96,20 @@ app.get('/json', (req, res) => {
   });
 });
 
+app.put('/update_status', (req, res) => {
+  // T.post('statuses/update', req.body , function(err, data, response) {
+    
+  // });
+  setTimeout(() => console.log(req.body), 3000);
+});
+
 
 
 app.listen(3000, () => {
   console.log('App is running on port 3000.')
 });
+
+// (req, res) => {
+//   
+//   console.log(req.body);
+// });
