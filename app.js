@@ -51,7 +51,7 @@ app.get('/', (req, res) => {
   const dms = [];
   const followers = [];
 
-  T.stream('user', follow)
+  
   //promise to get tweet data
   const tweetProm = new Promise( (resolve, reject) => {
     T.get('statuses/user_timeline', { screen_name: 'mtallerico1', count: 6 }, 
@@ -101,10 +101,31 @@ app.get('/json', (req, res) => {
   });
 });
 
+app.get("/results", (req,res) => {
+  const tweets = [];
+  const tweetProm = new Promise( (resolve, reject) => {
+    T.get('statuses/user_timeline', { screen_name: 'mtallerico1', count: 6 }, 
+     (err, data, response) => {
+      //pushing tweet data to variable that will be scoped to res.render
+      resolve(data.map(i => {
+        const tweetItem = new tweetObj(`${i.user.name}`, `${i.user.screen_name}`,
+          `${i.user.profile_image_url}`, `${i.retweet_count}`, 
+          `${i.favorite_count}`, `${i.text}`);
+          tweets.push(tweetItem);
+        }));
+     });
+  });
+
+  Promise.all([tweetProm])
+    .then( response => {
+      io.emit('update_tweets', tweets);
+    })
+});
+
 io.on('connection', function(socket){
   socket.on('tweet', function(msg){
     T.post('statuses/update', { status: `${msg.status}` }, function(err, data, response) {
-      
+      console.log(data);
     })
   });
 });
