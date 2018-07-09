@@ -51,6 +51,7 @@ app.get('/', (req, res) => {
   const dms = [];
   const followers = [];
 
+  T.stream('user', follow)
   //promise to get tweet data
   const tweetProm = new Promise( (resolve, reject) => {
     T.get('statuses/user_timeline', { screen_name: 'mtallerico1', count: 6 }, 
