@@ -44,7 +44,7 @@ html(lang="en")
           .circle--fluid--cell.circle--fluid--primary.align-bottom.app--tweet--post
             .app--avatar(style="background-image: url(images/m-spore.png)")
               img(src="images/m-spore.png")
-            textarea#tweet-textarea.circle--textarea--input(placeholder="What's happening?")
+            textarea#tweet-textarea.circle--textarea--input(placeholder="What's happening?" name= "status")
             strong#tweet-char.app--tweet--char 140
           .circle--fluid--cell.align-bottom
             button(class="button-primary" id="submit") Tweet
@@ -77,4 +77,5 @@ html(lang="en")
                 a #{tweets[0].name}
               ul.app--message--conversation
                 include direct
+    script(src="/static/js/socket.io.js")
     script(src="/static/js/client.js")

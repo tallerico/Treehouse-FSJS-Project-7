@@ -1,20 +1,17 @@
 const submitButton = document.getElementById('submit');
 const statusBox = document.querySelector('#tweet-textarea');
+// const socket = io.connect('http://localhost:3000');
+const socket = io();
 
+// socket.on('tweet', function (data) {
+//   console.log(data);
+  
+// });
 
-
-submitButton.addEventListener('click', (e) => {
+submitButton.addEventListener("click", (e) => {
   e.preventDefault();
-  let text = statusBox.value;
-  let Obj = { status: `${text}` };
-  fetch('/update_status', {
-    method: 'PUT', // or 'PUT'
-    body: JSON.stringify(Obj), // data can be `string` or {object}!
-    headers:{
-      'Content-Type': 'application/json, charset=utf-8'
-    }
-  })
+  const text = statusBox.value;
+  console.log(text);
+  socket.emit('tweet', { status: `${text}` });
+  statusBox.value = '';
 });
-
-
-

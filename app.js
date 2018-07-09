@@ -1,18 +1,22 @@
 const express = require('express');
+const app = express();
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const Twit = require('twit');
 const moment = require('moment');
+const server = require('http').Server(app);
+const io = require('socket.io')(server);
 const { auth } = require('./js/config.js');
-const app = express();
 const T = new Twit({
   consumer_key:         auth.consumer_key,
   consumer_secret:      auth.consumer_secret,
   access_token:         auth.access_token,
   access_token_secret:  auth.access_token_secret
-})
+});
 
-app.use(bodyParser.urlencoded({ extended: false}));
+io.origins(['*:*']);
+
+app.use(bodyParser.urlencoded({ extended: true}));
 app.use(cookieParser());
 app.use('/static', express.static('public'));
 
@@ -96,20 +100,17 @@ app.get('/json', (req, res) => {
   });
 });
 
-app.put('/update_status', (req, res) => {
-  // T.post('statuses/update', req.body , function(err, data, response) {
-    
-  // });
-  setTimeout(() => console.log(req.body), 3000);
+io.on('connection', function(socket){
+  socket.on('tweet', function(msg){
+    T.post('statuses/update', { status: `${msg.status}` }, function(err, data, response) {
+      
+    })
+  });
 });
 
 
 
-app.listen(3000, () => {
+server.listen(3000, () => {
   console.log('App is running on port 3000.')
 });
 
-// (req, res) => {
-//   
-//   console.log(req.body);
-// });
