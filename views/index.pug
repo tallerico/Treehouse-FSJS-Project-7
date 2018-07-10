@@ -21,7 +21,7 @@ html(lang="en")
       ––––––––––––––––––––––––––––––––––––––––––––––––––
     link(rel="stylesheet" href="/static/css/global.css")
   body
-    header.circle--header
+    header.circle--header(style=`background-image: url(${tweets[0].backgroundImg})`)
       .bounds
         .circle--fluid
           .circle--fluid--cell
