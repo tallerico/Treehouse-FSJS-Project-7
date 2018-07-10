@@ -1076,7 +1076,7 @@ select:focus {
 .circle--select {
   position: relative;
   width: 100%;
-  border-sizing: border-box;
+  box-sizing: border-box;
   border: 1px solid #aeddfa;
   height: 50px;
   border-radius: 8px;
@@ -2147,7 +2147,7 @@ body {
   left: 0;
   z-index: 1;
   margin: 0;
-  padding: 20px 5px;
+  padding: 10px 5px;
 }
 
 /* line 39, ../sass/global.sass */
@@ -2499,4 +2499,16 @@ input[type="submit"],
 input[type="reset"],
 input[type="button"] {
   padding: 16px 20px;
+}
+
+.authImage {
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin-right: 5px;
+  width: 25px;
+  height: 25px;
+  float: left;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1) inset;
 }
