@@ -96,43 +96,50 @@ app.get('/', (req, res) => {
 });
 
 app.get('/json', (req, res) => {
-  T.get('followers/list', { screen_name: 'mtallerico1', count: 5 }, (err, data, response) => { 
+  T.get('direct_messages/events/list', 
+  { screen_name: 'mtallerico1', count: 5}, (err, data, response) => { 
     res.send(data);
   });
 });
 
-app.get("/results", (req,res) => {
-  const tweets = [];
-  const tweetProm = new Promise( (resolve, reject) => {
-    T.get('statuses/user_timeline', { screen_name: 'mtallerico1', count: 6 }, 
-     (err, data, response) => {
-      //pushing tweet data to variable that will be scoped to res.render
-      resolve(data.map(i => {
-        const tweetItem = new tweetObj(`${i.user.name}`, `${i.user.screen_name}`,
-          `${i.user.profile_image_url}`, `${i.retweet_count}`, 
-          `${i.favorite_count}`, `${i.text}`);
-          tweets.push(tweetItem);
-        }));
-     });
-  });
+// app.get("/results", (req,res) => {
+  
+//   const tweetProm = new Promise( (resolve, reject) => {
+//     T.get('statuses/user_timeline', { screen_name: 'mtallerico1', count: 6 }, 
+//      (err, data, response) => {
+//       //pushing tweet data to variable that will be scoped to res.render
+//       resolve(data.map(i => {
+//         const tweetItem = new tweetObj(`${i.user.name}`, `${i.user.screen_name}`,
+//           `${i.user.profile_image_url}`, `${i.retweet_count}`, 
+//           `${i.favorite_count}`, `${i.text}`);
+//           tweets.push(tweetItem);
+//         }));
+//      });
+//   });
 
-  Promise.all([tweetProm])
-    .then( response => {
-      io.emit('update_tweets', tweets);
-    })
-});
+//   Promise.all([tweetProm])
+//     .then( response => {
+//       io.emit('update_tweets', tweets);
+//     })
+// });
 
 io.on('connection', function(socket){
   socket.on('tweet', function(msg){
-    T.post('statuses/update', { status: `${msg.status}` }, function(err, data, response) {
-      console.log(data);
+    T.post('statuses/update', { status: `${msg.status}`, count: 5 }, function(err, data, response) {
+      // console.log(data);
+    //   const tweets = [];
+    //   const tweetItem = new tweetObj(`${data.user.name}`, `${data.user.screen_name}`,
+    //     `${data.user.profile_image_url}`, `${data.retweet_count}`, 
+    //     `${data.favorite_count}`, `${data.text}`);
+    //     tweets.push(tweetItem);
+    //   })
+      io.emit('update_tweets', data);
+    // })
     })
-  });
-});
-
+  })
+})
 
 
 server.listen(3000, () => {
   console.log('App is running on port 3000.')
 });
-
