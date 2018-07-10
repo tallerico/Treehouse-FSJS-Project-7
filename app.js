@@ -47,11 +47,11 @@ function followObj(name, scrName, imgUrl) {
 };
 
 // setting route for the index page
-app.get('/', (req, res) => {
+app.get('/', (req, res, next) => {
   const tweets = [];
   const dms = [];
   const followers = [];
-
+  const err = new Error('Error getting data. Please refresh.');
   
   //promise to get tweet data
   const tweetProm = new Promise( (resolve, reject) => {
@@ -110,7 +110,12 @@ io.on('connection', function(socket){
   })
 })
 
+app.use((err, req, res, next) => {
+  res.locals.error = err;
+  res.status(err.status);
+  res.render('error', err);
+})
 
 server.listen(3000, () => {
   console.log('App is running on port 3000.')
-});
+})
