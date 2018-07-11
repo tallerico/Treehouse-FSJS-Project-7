@@ -2,7 +2,7 @@
 block tweets
   each tweet, i in tweets
     li
-      strong.app--tweet--timestamp 4h
+      strong.app--tweet--timestamp #{tweets[i].date}
       a.app--tweet--author
         .app--avatar(style=`background-image: url('${tweets[i].imgUrl}')`)
           img(src=`${tweets[i].imgUrl}`)

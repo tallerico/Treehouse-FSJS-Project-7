@@ -40,7 +40,7 @@ function tweetObj(name,scrName, imgUrl, retweet, likes, tweetText, date) {
   this.retweet = retweet;
   this.likes = likes;
   this.tweetText = tweetText;
-  this.date = date;
+  this.date = moment(date).format("ddd, MMM Do");
 };
 
 //a function to create a new object for direct message data
@@ -105,6 +105,10 @@ app.get('/', (req, res) => {
     res.render('index', {tweets, user, directMessages, followers})
   })
 })
+
+app.get('/error', (req, res) => {
+  res.render('error');
+})
 //sending tweet bost back to client to be rendered in tweet list.
 io.on('connection', function(socket){
   socket.on('tweet', function(msg){
@@ -116,8 +120,7 @@ io.on('connection', function(socket){
 // handling errors
 app.use((err, req, res, next) => {
   console.log(res.status);
-  res.redirect('error', {err})
-
+  res.redirect('./error', {err})
 })
 
 server.listen(3000, () => {
