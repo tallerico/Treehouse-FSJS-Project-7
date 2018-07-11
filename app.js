@@ -32,6 +32,7 @@ const dataPromises = [
   T.get('followers/list', { screen_name: `${userID}`, count: 5})
 ];
 
+
 //a function to create a new object for tweet data
 function tweetObj(name,scrName, imgUrl, retweet, likes, tweetText, date) {
   this.name = name;
@@ -58,7 +59,7 @@ function followObj(name, scrName, imgUrl) {
 };
 
 //rendering index page 
-app.get('/', (req, res) => {
+app.get('/', (req, res, next) => {
   let tweets =[];
   let user;
   let directMessages = []
@@ -102,13 +103,10 @@ app.get('/', (req, res) => {
     dataPromises[3]
   ])
     .then(response => {
-    res.render('index', {tweets, user, directMessages, followers})
-  })
+    res.render('index', {tweets, user, directMessages, followers});
+  }).catch(next)
 })
 
-app.get('/error', (req, res) => {
-  res.render('error');
-})
 //sending tweet bost back to client to be rendered in tweet list.
 io.on('connection', function(socket){
   socket.on('tweet', function(msg){
@@ -119,8 +117,8 @@ io.on('connection', function(socket){
 })
 // handling errors
 app.use((err, req, res, next) => {
-  console.log(res.status);
-  res.redirect('./error', {err})
+    err.message = 'Houston, we have a problem';
+    res.render('error', {error: err});
 })
 
 server.listen(3000, () => {
