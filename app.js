@@ -24,8 +24,6 @@ app.use('/static', express.static('public'));
 
 app.set('view engine', 'pug');
 
-// const newData = [];
-
 const dataPromises = [
   T.get('statuses/user_timeline', { screen_name: `${userID}`, count: 6 }),
   T.get('users/show', { screen_name: `${userID}`}),
@@ -33,53 +31,99 @@ const dataPromises = [
   T.get('followers/list', { screen_name: `${userID}`, count: 5})
 ];
 
-// dataPromises.map( promise => {
-//   promise.then(result => {
-//     newData.push(result.data);
-//   })
-// })
+//a function to create a new object for tweet data
+function tweetObj(name,scrName, imgUrl, retweet, likes, tweetText, date) {
+  this.name = name;
+  this.scrName = scrName;
+  this.imgUrl = imgUrl;
+  this.retweet = retweet;
+  this.likes = likes;
+  this.tweetText = tweetText;
+  this.date = date;
+};
+
+//a function to create a new object for direct message data
+function dmObj(sender, message, date) {
+  this.sender = sender;
+  this.message = message;
+  this.date = moment(Number(date)).format("ddd, hA");
+};
+
+//a function to create a new object for direct message data
+function followObj(name, scrName, imgUrl) {
+  this.name = name;
+  this.scrName = scrName;
+  this.imgUrl = imgUrl;
+};
+
 
 app.get('/', (req, res) => {
-  Promise.all([dataPromises])
+  let tweets =[];
+  let user;
+  let directMessages = []
+  let followers = []; 
+
+  dataPromises[0].then(result => {
+    result.data.map(tweet => {
+      tweetCur = new tweetObj(tweet.user.name, tweet.user.screen_name,
+        tweet.user.profile_image_url,
+        tweet.retweet_count, tweet.favorite_count,
+        tweet.text, tweet.created_at);
+        tweets.push(tweetCur);
+    });
+  })
+
+  dataPromises[1].then(result => {
+    user = result.data;
+  })
+
+  dataPromises[2].then(result => {
+    result.data.events.map(event => {
+      const dm = new dmObj(event.message_create.sender_id, 
+        event.message_create.message_data.text,
+        event.created_timestamp)
+      directMessages.push(dm);
+    });
+  })
+
+  dataPromises[3].then(result => {
+    result.data.users.map(follower => {
+      const followerCur = new followObj(follower.name, 
+        follower.screen_name,
+        follower.profile_image_url)
+        followers.push(followerCur);
+    });
+  })
+
+  Promise.all([dataPromises[0],
+    dataPromises[1],
+    dataPromises[2],
+    dataPromises[3]
+  ])
     .then(response => {
-      res.send(response[0].fulfillmentValue.data[0].text);
+    res.render('index', {tweets, user, directMessages, followers})
   }).catch(err => {
     res.send(err.stack);
   })
 })
 
-// app.get('/data', (req, res) => {
-//   Promise.all([dataPromises])
-//     .then(response => {
-//       dataPromises.map( promise => {
-//         promise.then(result => {
-//           newData.push(result.data);
-//         })
-//       })
-//       res.send(newData);
-//   })
-// })
+app.get('/data', (req, res) => {
+  Promise.all([dataPromises])
+    .then(response => {
+      res.send(newData);
+      })
+      
+  })
 
+  
+io.on('connection', function(socket){
+  socket.on('tweet', function(msg){
+    T.post('statuses/update', { status: `${msg.status}`, count: 5 }, function(err, data, response) {
+      io.emit('update_tweets', data);
+    })
+  })
+})
 
-// app.get('/json', (req, res) => {
-//   T.get('statuses/user_timeline', { screen_name: 'mtallerico1', count: 6 }, (err, data, response) => { 
-//     res.send(data);
-//   });
-// });
-
-// io.on('connection', function(socket){
-//   socket.on('tweet', function(msg){
-//     T.post('statuses/update', { status: `${msg.status}`, count: 5 }, function(err, data, response) {
-//       io.emit('update_tweets', data);
-//     })
-//   })
-// })
-
-// app.use((err, req, res, next) => {
-//   res.locals.error = err;
-//   res.status(err.status);
-//   res.render('error', err);
-// })
 
 server.listen(3000, () => {
   console.log('App is running on port 3000.')
