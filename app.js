@@ -24,6 +24,7 @@ app.use('/static', express.static('public'));
 
 app.set('view engine', 'pug');
 
+//an array of all get promises
 const dataPromises = [
   T.get('statuses/user_timeline', { screen_name: `${userID}`, count: 6 }),
   T.get('users/show', { screen_name: `${userID}`}),
@@ -56,13 +57,13 @@ function followObj(name, scrName, imgUrl) {
   this.imgUrl = imgUrl;
 };
 
-
+//rendering index page 
 app.get('/', (req, res) => {
   let tweets =[];
   let user;
   let directMessages = []
   let followers = []; 
-
+  //gettin tweet data and creating an array of objects
   dataPromises[0].then(result => {
     result.data.map(tweet => {
       tweetCur = new tweetObj(tweet.user.name, tweet.user.screen_name,
@@ -72,11 +73,11 @@ app.get('/', (req, res) => {
         tweets.push(tweetCur);
     });
   })
-
+  //gettin user data
   dataPromises[1].then(result => {
     user = result.data;
   })
-
+  //gettin direct message data
   dataPromises[2].then(result => {
     result.data.events.map(event => {
       const dm = new dmObj(event.message_create.sender_id, 
@@ -85,7 +86,7 @@ app.get('/', (req, res) => {
       directMessages.push(dm);
     });
   })
-
+  //gettin follower data
   dataPromises[3].then(result => {
     result.data.users.map(follower => {
       const followerCur = new followObj(follower.name, 
@@ -94,7 +95,7 @@ app.get('/', (req, res) => {
         followers.push(followerCur);
     });
   })
-
+  //resolving all promises before rendering index page
   Promise.all([dataPromises[0],
     dataPromises[1],
     dataPromises[2],
@@ -102,20 +103,9 @@ app.get('/', (req, res) => {
   ])
     .then(response => {
     res.render('index', {tweets, user, directMessages, followers})
-  }).catch(err => {
-    res.send(err.stack);
   })
 })
-
-app.get('/data', (req, res) => {
-  Promise.all([dataPromises])
-    .then(response => {
-      res.send(newData);
-      })
-      
-  })
-
-  
+//sending tweet bost back to client to be rendered in tweet list.
 io.on('connection', function(socket){
   socket.on('tweet', function(msg){
     T.post('statuses/update', { status: `${msg.status}`, count: 5 }, function(err, data, response) {
@@ -123,7 +113,12 @@ io.on('connection', function(socket){
     })
   })
 })
+// handling errors
+app.use((err, req, res, next) => {
+  console.log(res.status);
+  res.redirect('error', {err})
 
+})
 
 server.listen(3000, () => {
   console.log('App is running on port 3000.')
