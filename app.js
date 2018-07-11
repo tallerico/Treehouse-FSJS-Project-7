@@ -20,10 +20,11 @@ const userID = 'mtallerico1';
 io.origins(['*:*']);
 
 app.use(bodyParser.urlencoded({ extended: true}));
-app.use(cookieParser());
 app.use('/static', express.static('public'));
 
 app.set('view engine', 'pug');
+
+// const newData = [];
 
 const dataPromises = [
   T.get('statuses/user_timeline', { screen_name: `${userID}`, count: 6 }),
@@ -32,34 +33,32 @@ const dataPromises = [
   T.get('followers/list', { screen_name: `${userID}`, count: 5})
 ];
 
-function getData(array, template) {
-
-}
+// dataPromises.map( promise => {
+//   promise.then(result => {
+//     newData.push(result.data);
+//   })
+// })
 
 app.get('/', (req, res) => {
   Promise.all([dataPromises])
     .then(response => {
-      return response[0];
-  }).then(response => {
-    const tweets = response[0].fulfillmentValue.data;
-    const userData = response[1].fulfillmentValue.data;
-    const directMessages = response[2].fulfillmentValue.data;
-    const followers = response[3].fulfillmentValue.data;
-    res.render('index', {tweets, userData, directMessages, followers});
+      res.send(response[0].fulfillmentValue.data[0].text);
   }).catch(err => {
     res.send(err.stack);
   })
 })
 
-app.get('/data', (req, res) => {
-  Promise.all([dataPromises])
-    .then(response => {
-      return response[0];
-  }).then(response => {
-    
-    res.send(response);
-  })
-})
+// app.get('/data', (req, res) => {
+//   Promise.all([dataPromises])
+//     .then(response => {
+//       dataPromises.map( promise => {
+//         promise.then(result => {
+//           newData.push(result.data);
+//         })
+//       })
+//       res.send(newData);
+//   })
+// })
 
 
 // app.get('/json', (req, res) => {
