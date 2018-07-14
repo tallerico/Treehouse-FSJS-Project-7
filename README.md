@@ -11,13 +11,13 @@
 
 Create config.js file in js folder
 
-In config file create an object literal 
+In config file create an object
 
     const config = {
-        consumer_key : 't3h67nqUEyBEbpPfcNSgQa50o',
-        consumer_secret : 'Tc5xdeXMqOSD8xuqRJ7aORn3f3oMOXfdz7FukU3qDu8rdwe4yt',
-        access_token : '233073127-Ahmr1bgka0IvX85bjENSYKJiKgcVTM1nydEw4SKA',
-        access_token_secret : 'H9PJYv4KiKS8JyMYgAE0SHv3TQyDmixz1UaEotThBE2zL'
+        consumer_key : '...',
+        consumer_secret : '...',
+        access_token : '...',
+        access_token_secret : '...'
     }
 
     module.exports = config;
