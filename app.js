@@ -6,15 +6,13 @@ const Twit = require('twit');
 const moment = require('moment');
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-const config = require('./js/config.js');
+const config = require('./config/config.js');
 const T = new Twit({
   consumer_key:         config.consumer_key,
   consumer_secret:      config.consumer_secret,
   access_token:         config.access_token,
   access_token_secret:  config.access_token_secret
 });
-
-//can be any users screen name
 
 io.origins(['*:*']);
 
@@ -28,7 +26,7 @@ const dataPromises = [
   T.get('statuses/user_timeline', { count: 6 }),
   T.get('account/verify_credentials', { skip_status: true}),
   T.get('direct_messages/events/list', { count: 5}),
-  T.get('followers/list', { count: 5 })
+  T.get('friends/list', { count: 5 })
 ];
 
 // T.get('users/show', { screen_name: `${userID}`}),

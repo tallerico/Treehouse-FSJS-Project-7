@@ -8,7 +8,7 @@ block direct
         p.app--message--timestamp #{directMessages[i].date}
     else
       li.app--message
-        .app--avatar(style=`background-image: url(${followers[0].imgUrl})`)
+        .app--avatar(style=`background-image: url(${user.profile_image_url})`)
           img(src="public/images/f-spore.png")
         p.app--message--text #{directMessages[i].message}
         p.app--message--timestamp #{directMessages[i].date} 

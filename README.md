@@ -1,20 +1,24 @@
 # Treehouse-FSJS-Project-7
 
+*Setup
 
-*To set up your config file
+1. Download and unzip
+2. run npm install to install all dependencies
+3. Create config.js file in config folder
+
+
+***To set up your config file
 
 Create config.js file in js folder
 
 In config file create an object literal 
 
-    exports.auth = {
-      consumer_key:         '...',
-      consumer_secret:      '...',
-      access_token:         '...',
-      access_token_secret:  '...'
+    const config = {
+        consumer_key : 't3h67nqUEyBEbpPfcNSgQa50o',
+        consumer_secret : 'Tc5xdeXMqOSD8xuqRJ7aORn3f3oMOXfdz7FukU3qDu8rdwe4yt',
+        access_token : '233073127-Ahmr1bgka0IvX85bjENSYKJiKgcVTM1nydEw4SKA',
+        access_token_secret : 'H9PJYv4KiKS8JyMYgAE0SHv3TQyDmixz1UaEotThBE2zL'
     }
 
+    module.exports = config;
 
-Make sure in your app.js file that you include config file
-
-    const { auth } = require('./js/config.js');
