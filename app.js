@@ -6,16 +6,13 @@ const Twit = require('twit');
 const moment = require('moment');
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
-const { auth } = require('./js/config.js');
+const config = require('./config/config.js');
 const T = new Twit({
-  consumer_key:         auth.consumer_key,
-  consumer_secret:      auth.consumer_secret,
-  access_token:         auth.access_token,
-  access_token_secret:  auth.access_token_secret
+  consumer_key:         config.consumer_key,
+  consumer_secret:      config.consumer_secret,
+  access_token:         config.access_token,
+  access_token_secret:  config.access_token_secret
 });
-
-//can be any users screen name
-const userID = 'mtallerico1';
 
 io.origins(['*:*']);
 
@@ -26,13 +23,13 @@ app.set('view engine', 'pug');
 
 //an array of all get promises
 const dataPromises = [
-  T.get('statuses/user_timeline', { screen_name: `${userID}`, count: 6 }),
-  T.get('users/show', { screen_name: `${userID}`}),
-  T.get('direct_messages/events/list', { screen_name: `${userID}`, count: 5}),
-  T.get('followers/list', { screen_name: `${userID}`, count: 5})
+  T.get('statuses/user_timeline', { count: 6 }),
+  T.get('account/verify_credentials', { skip_status: true}),
+  T.get('direct_messages/events/list', { count: 5}),
+  T.get('friends/list', { count: 5 })
 ];
 
-
+// T.get('users/show', { screen_name: `${userID}`}),
 //a function to create a new object for tweet data
 function tweetObj(name,scrName, imgUrl, retweet, likes, tweetText, date) {
   this.name = name;
@@ -41,15 +38,19 @@ function tweetObj(name,scrName, imgUrl, retweet, likes, tweetText, date) {
   this.retweet = retweet;
   this.likes = likes;
   this.tweetText = tweetText;
-  this.date = moment(date).format("ddd, MMM Do");
+  this.date = date;
 };
+
+// moment(date).format("ddd, MMM Do");
 
 //a function to create a new object for direct message data
 function dmObj(sender, message, date) {
   this.sender = sender;
   this.message = message;
-  this.date = moment(Number(date)).format("ddd, hA");
+  this.date = date;
 };
+
+// moment(Number(date)).format("ddd, hA")
 
 //a function to create a new object for direct message data
 function followObj(name, scrName, imgUrl) {
