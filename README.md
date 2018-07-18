@@ -9,7 +9,7 @@
 
 ***To set up your config file
 
-Create config.js file in js folder
+Create a config folder and then place config.js file in config folder
 
 In config file create an object
 
