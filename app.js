@@ -116,6 +116,13 @@ io.on('connection', function(socket){
     })
   })
 })
+
+app.get('/data', (req, res, next) => {
+  T.get('account/verify_credentials', { skip_status: true}, function(err, data, response) {
+    res.send(data);
+  })
+})
+
 // handling errors
 app.use((err, req, res, next) => {
     err.message = 'Houston, we have a problem';
